@@ -1,0 +1,131 @@
+
+gems: [jekyll-paginate]
+
+######################### theme kunka condigure ##############################################
+# Where things are
+source:       .
+destination:  ./_site
+plugins_dir:  ./_plugins
+layouts_dir:  ./_layouts
+themes_dir:   ./themes
+paginate:     8
+
+# Handling Reading
+safe:         false
+include:      [".htaccess"]
+exclude:      []
+keep_files:   [".git", ".svn"]
+encoding:     "utf-8"
+markdown_ext: "markdown,mkdown,mkdn,mkd,md"
+textile_ext:  "textile"
+
+# Filtering Content
+show_drafts:  null
+limit_posts:  0
+future:       true
+unpublished:  false
+
+# Conversion
+markdown:     kramdown
+highlighter:  pygments
+lsi:          false
+excerpt_separator: "\n\n"
+
+# Serving
+detach:       false
+port:         4000
+host:         127.0.0.1
+baseurl:      "" # does not include hostname
+
+# Outputting
+permalink:     date
+paginate_path: /page:num
+timezone:      null
+
+
+#Site config
+title: Automotive Software
+description: Information about the opensoure automotive software repository https://github.com/autoas/ssas-public
+keywords: AUTOSAR OSEK AUTOMOTIVE
+url: /as
+feed: /atom.xml
+favicon: http://jekyllrb.com/favicon.png
+
+#Nav config
+nav:
+  - text: Home
+    url: index.html
+  - text: Categories
+    url: navigations/categories.html
+  - text: Archives
+    url: navigations/archives.html
+  - text: Contact
+    url: navigations/contact.html
+  - text: Links
+    url: navigations/links.html
+
+#Author config
+author:
+    name: Parai
+    email: parai@foxmail.com
+    imageLink: https://raw.githubusercontent.com/parai/as/gh-pages/images/my_photo.jpg
+    simpleIntro: parai.wang
+    detailIntro:
+      <p> Automotive software and its tool-chain, mainly about AUTOSAR</p>
+      <p> I hope this repository could help others who are interested in AUTOSAR or OSEK. </p>
+
+#Follow me, you can choose your icon by http://fortawesome.github.io/Font-Awesome/icons/#brand
+follow:
+  - class: icon-rss
+    url: /atom.xml
+  - class: icon-weibo
+    url: http://weibo.com
+  - class: icon-renren
+    url: http://renren.com
+  - class: icon-github-alt
+    url: http://github.com/parai/as
+  - class: icon-twitter
+    url: http://twitter.com
+  - class: icon-google-plus
+    url: http://google.com
+
+#Links
+customLinks:
+  - item:
+    - text: AUTOSAR
+      url: http://www.autosar.org/
+    - text: ssas github
+      url: https://github.com/autoas/ssas-public
+    message: Friends
+  - item:
+    - text: Font Awesome
+      url: http://fortawesome.github.io/Font-Awesome/
+    - text: Google Font
+      url: http://www.google.com/fonts/
+    - text: jQuery
+      url: http://jquery.com/
+    message: others links
+
+#comment config
+disqus:
+  config: false
+  id: parai_wang
+
+
+#################################### global configure #######################################
+
+username: parai
+baseurl: /as
+markdown: kramdown
+safe: false
+highlighter: rouge
+title: AS
+description: Automotive Software collection, such as AUTOSAR&OSEK and its toolchain
+# for jekyll 3.3, kunka is not build in
+whichtheme: kunka
+#theme: kunka
+# an page register on https://disqus.com/
+disqusname: autosar
+
+# theme can be: hack, leap-day, merlot, midnight, minimal, modernist, slate, time-machine, kunka
+# those themes are all come from GitHub Pages Themes
