@@ -33,7 +33,7 @@ excerpt_separator: "\n\n"
 
 # Serving
 detach:       false
-port:         4000
+port:         8000
 host:         127.0.0.1
 baseurl:      "" # does not include hostname
 
@@ -47,7 +47,7 @@ timezone:      null
 title: Automotive Software
 description: Information about the opensoure automotive software repository https://github.com/autoas/ssas-public
 keywords: AUTOSAR OSEK AUTOMOTIVE
-url: /as
+url: /ssas-public
 feed: /atom.xml
 favicon: http://jekyllrb.com/favicon.png
 
@@ -83,7 +83,7 @@ follow:
   - class: icon-renren
     url: http://renren.com
   - class: icon-github-alt
-    url: http://github.com/parai/as
+    url: http://github.com/autoas/ssas-public
   - class: icon-twitter
     url: http://twitter.com
   - class: icon-google-plus
@@ -115,7 +115,7 @@ disqus:
 #################################### global configure #######################################
 
 username: parai
-baseurl: /as
+baseurl: /ssas-public
 markdown: kramdown
 safe: false
 highlighter: rouge
