@@ -91,12 +91,11 @@ D:\repository\ssppas-public>build\nt\GCC\Loader\Loader.exe -a build\nt\QemuVersa
 
 # 在boot页，最终可以看到如下日志
 block information of build\nt\QemuVersatilepbGCC\VersatilepbCanApp\VersatilepbCanApp.s19.sign:
-srec 0: address=0x00060000, length=0x000000B8, offset=0x00000000, data=18F09FE518F09FE5 crc16=CC60
-srec 1: address=0x00070000, length=0x0000BB11, offset=0x000000B8, data=04B02DE500B08DE2 crc16=396F
-srec 2: address=0x0015FFFE, length=0x00000002, offset=0x0000BBC9, data=A43D crc16=2B4B
+srec 0: address=0x00040000, length=0x0000C5C0, offset=0x00000000, data=18F09FE518F09FE5 crc16=C022
+srec 1: address=0x0013FFFE, length=0x00000002, offset=0x0000C5C0, data=05C3 crc16=BD5
 block information of build\nt\QemuVersatilepbGCC\VersatilepbFlashDriver\VersatilepbFlashDriver.s19.sign:
-srec 0: address=0x00050000, length=0x00000568, offset=0x00000000, data=010200A918000500 crc16=1E19
-srec 1: address=0x00050FFE, length=0x00000002, offset=0x00000568, data=5FA8 crc16=376C
+srec 0: address=0x00140000, length=0x00000568, offset=0x00000000, data=010200A918001400 crc16=4E9D
+srec 1: address=0x00140FFE, length=0x00000002, offset=0x00000568, data=4DBF crc16=30AB
 loader started:
 enter extended session          progress  0.10%  okay
 level 1 security access         progress  0.30%  okay
@@ -182,6 +181,75 @@ download flash driver
  ...
  ...
 ```
+
+### bootloader各工程介绍
+
+本例子使用QEMU Versatilepb来模拟，地址空间0x00008000到0x00140000，模拟为Flash，大小1248Kb；地址空间0x00140000到0x00180000，模拟为RAM，大小256Kb。但其实，对这款QEMU虚拟机，其只有RAM，这里只是将部分RAM抽象认为其是Flash而已。
+
+OK，这个时候在回过头来看，bootloader项目需要的三个工程，第一个是bootloader自己，这个毋庸置疑，从上图1我们也知道其在Flash空间的开始地址处。这里涉及到一点小知识，如何编译链接bootloader，将其放在图1所示boot空间呢？这个就要讲到链接脚本， 我们先看看QEMU Versatilepb的bootloader工程的链接脚本[linker-boot.lds](https://github.com/autoas/qemu/versatilepb/linker-boot.lds)，这里要说明下，不同的编译器，其控制链接的脚本的格式可能不一样。
+
+```txt
+MEMORY
+{
+   FLASH        (rx)   : ORIGIN = 0x00008000, LENGTH = 224K
+   APPCODE      (rx)   : ORIGIN = 0x00040000, LENGTH = 1024K
+   FLSDRV       (rwx)  : ORIGIN = 0x00140000, LENGTH = 4K
+   RAM          (rwx)  : ORIGIN = 0x00141000, LENGTH = 252K
+}
+```
+
+如上为其片段，可以看到，我们将从地址0x00008000到0x00040000区间划分用作boot区间，将0x00040000开始剩下的空间划分用作app区间。app工程的链接脚本[linker-app.lds](https://github.com/autoas/qemu/versatilepb/linker-app.lds)的部分内容如下：
+
+```txt
+MEMORY
+{
+   FLASH        (rx)   : ORIGIN = 0x00040000, LENGTH = 1024K
+   RAM          (rwx)  : ORIGIN = 0x00140000, LENGTH = 256K
+}
+```
+
+再来看看Flash Driver工程的链接脚本[linker-flsdrv.lds](https://github.com/autoas/qemu/versatilepb/linker-flsdrv.lds)的全部内容如下：
+
+```txt
+MEMORY
+{
+  FLASH        (rwx)  : ORIGIN = 0x00140000, LENGTH = 4K
+}
+
+ENTRY(FlashHeader)
+
+SECTIONS
+{
+    .text :
+    {
+      *(.rodata*)
+      *(.text*)
+    } > FLASH
+}
+```
+
+眼尖的同学，应该可以立刻注意到bootoader的RAM要比app的RAM少最开始处的4K，那这4K去哪了呢？在看看FlashDriver的Flash区间，其和bootloader的RAM合起来刚好是256K，即可知，对bootloader工程来说，需要将RAM保留一定空间用来下载存储FlashDriver，即bootloader + FlashDriver合起来才可以完成升级过程。
+
+这里很多人会问，为何要将FlashDriver从bootloader工程里分离出来？这主要是为了安全的考虑，因为程序或许有bug，或者MCU受电磁干扰，导致程序跑飞，万一误触发执行了FlashDriver里的擦写指令，万一擦写坏bootloader或者app，势必有可能导致系统变砖的可能行。所以，业界就解决该问题的方式主要有2种：
+
+* 一种如本例子所示，动态下载Flash驱动
+
+* 另一种，加密存储Flash驱动，例如对Flash驱动二进制指令取反，从而将有效指令变为无效指令
+
+对于做bootloader的同学而言，分区的划分实现算是一个难点。创建bootloader和app工程，因为有IDE的帮助，也不算什么难事，链接到指定分区通过IDE也可以很容易做到。但最难的还是如何创建编译一份只有FlashDriver的工程。不懂编译链接原理的同学，可能会在这里有种挫败感而止步不前，但我能告诉你的是，这个时候你需要查看你所使用的编译器的文档，去搞清楚如何去控制链接，如何设置程序入口地址等（搞MCU嵌入式同学，一定不要认为程序的入口是main函数），如上FlashDriver的链接脚本，其通过语句“ENTRY(FlashHeader)”，将程序的入口地址改写为“FlashHeader”，并且阅读SECTIONS描述，“rodata”段放Flash区间的开始处，结合FlashDriver代码[Flash.c](https://github.com/autoas/qemu/flash/Flash.c)， 如下片段，可知，FlashHeader为const常量，放rodata段，而该工程只有这一个const常量，所以FlashHeader的地址即为0x00140000，所以通过该地址，按tFlashHeader访问该内存，即可获取Flash驱动的各函数地址，也可以拿到动态下载的Flash驱动的版本信息等，bootloader也可根据该内容做些相关检查等！
+
+```c
+const tFlashHeader FlashHeader = {.Info.W.MCU = 1,
+                                  .Info.W.mask = 2,
+                                  .Info.W.version = 169,
+                                  .Init = FlashInit,
+                                  .Deinit = FlashDeinit,
+                                  .Erase = FlashErase,
+                                  .Write = FlashWrite,
+                                  .Read = FlashRead};
+```
+
+好吧，其实很多非常细节性的多西这篇文章是远远没有讲到的！但如果你认真看完本文，并且动手完成了QEMU的实验，对bootloader你也会有一个基本的认识。
 
 
 
