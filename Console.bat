@@ -3,7 +3,7 @@
 set ASPATH=%~dp0
 set astmp=%ASPATH%
 set ASDISK=%astmp:~1,2%
-set MSYS2=C:\msys64
+set MSYS2=D:\msys64
 
 %ASDISK%
 cd %ASPATH%
@@ -11,7 +11,7 @@ cd %ASPATH%
 REM base env PATH
 set PATH=C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0
 
-set PATH=C:\Anaconda3;C:\Anaconda3\Scripts;%MSYS2%\mingw64\bin;%MSYS2%\usr\bin;%MSYS2%\mingw32\bin;%PATH%
+set PATH=D:\Anaconda3;D:\Anaconda3\Scripts;%MSYS2%\mingw64\bin;%MSYS2%\usr\bin;%MSYS2%\mingw32\bin;%PATH%
 set PATH=%PATH%;%ASPATH%\download\gcc-arm-none-eabi-5_4-2016q3-20160926-win32\bin
 
 set ConEmu=%ASPATH%\download\ConEmu\ConEmu64.exe
