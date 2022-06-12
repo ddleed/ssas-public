@@ -285,7 +285,7 @@ void Task_MainLoop(void) {
 }
 /* ================================ [ FUNCTIONS ] ============================================== */
 int main(int argc, char *argv[]) {
-  ASLOG(INFO, ("application build @ %s %s\n", __DATE__, __TIME__));
+  ASLOG(INFO, ("application v1 build @ %s %s\n", __DATE__, __TIME__));
 
   Mcu_Init(NULL);
 

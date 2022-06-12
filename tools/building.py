@@ -1351,7 +1351,7 @@ class Qemu():
         import time
         time.sleep(3)
         self.canbus = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.canbus.connect(('127.0.0.1', 80))
+        self.canbus.connect(('127.0.0.1', 8000))
         self.canbus.settimeout(0.001)
         self.can0 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.can0.connect(('127.0.0.1', self.portCAN0))

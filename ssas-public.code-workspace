@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.c": "c",
+			"app.h": "c",
+			"mcu.h": "c",
+			"std_timer.h": "c",
+			"std_debug.h": "c",
+			"can.h": "c"
+		}
+	}
+}
